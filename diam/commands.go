@@ -6,7 +6,7 @@
 
 package diam
 
-// codes
+// codes codes
 // Diameter command codes.
 const (
 	AA                        = 265
