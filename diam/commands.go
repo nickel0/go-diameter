@@ -50,6 +50,8 @@ const (
 	DPR = "DPR"
 	DWA = "DWA"
 	DWR = "DWR"
+	ECA = "ECA"
+	ECR = "ECR"
 	MAA = "MAA"
 	MAR = "MAR"
 	NOA = "NOA"
