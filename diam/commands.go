@@ -17,6 +17,7 @@ const (
 	CreditControl             = 272
 	DeviceWatchdog            = 280
 	DisconnectPeer            = 282
+	MEIdentityCheck           = 324
 	MultimediaAuthentication  = 303
 	Notify                    = 323
 	PurgeUE                   = 321
