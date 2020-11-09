@@ -195,6 +195,7 @@ const (
 	EnvelopeStartTime                          = 1269
 	ePDGAddress                                = 3425
 	EPSSubscribedQoSProfile                    = 1431
+	EquipmentStatus                            = 1445
 	EquivalentPLMNList                         = 1637
 	ErrorDiagnostic                            = 1614
 	ErrorMessage                               = 281

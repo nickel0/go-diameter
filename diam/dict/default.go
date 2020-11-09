@@ -4995,6 +4995,13 @@ var tgpps13XML = `<?xml version="1.0" encoding="UTF-8"?>
                 <rule avp="Route-Record" required="false"/>
             </answer>
         </command>
+
+        <avp name="Equipment-Status" code="1445" must="M,V" may-encrypt="N" vendor-id="10415">
+            <data type="Enumerated">
+                <item code="0" name="WHITELISTED"/>
+                <item code="1" name="BLACKLISTED"/>
+            </data>
+        </avp>
     </application>
 </diameter>`
 
