@@ -32,7 +32,7 @@ func handleDWR(sm *StateMachine) diam.HandlerFunc {
 			})
 			return
 		}
-		consoleLog("received message from %s: DWR", c.RemoteAddr())
+		consoleLog("received message from %s: DWR\n", c.RemoteAddr())
 		a := m.Answer(diam.Success)
 		a.NewAVP(avp.OriginHost, avp.Mbit, 0, sm.cfg.OriginHost)
 		a.NewAVP(avp.OriginRealm, avp.Mbit, 0, sm.cfg.OriginRealm)
@@ -40,7 +40,7 @@ func handleDWR(sm *StateMachine) diam.HandlerFunc {
 			stateid := datatype.Unsigned32(sm.cfg.OriginStateID)
 			m.NewAVP(avp.OriginStateID, avp.Mbit, 0, stateid)
 		}
-		consoleLog("sending: DWA")
+		consoleLog("sending: DWA\n")
 		_, err = a.WriteTo(c)
 
 		if err != nil {
