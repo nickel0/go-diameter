@@ -5,6 +5,9 @@
 package sm
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/fiorix/go-diameter/v4/diam"
 	"github.com/fiorix/go-diameter/v4/diam/avp"
 	"github.com/fiorix/go-diameter/v4/diam/datatype"
@@ -29,6 +32,7 @@ func handleDWR(sm *StateMachine) diam.HandlerFunc {
 			})
 			return
 		}
+		consoleLog("received message from %s: DWR", c.RemoteAddr())
 		a := m.Answer(diam.Success)
 		a.NewAVP(avp.OriginHost, avp.Mbit, 0, sm.cfg.OriginHost)
 		a.NewAVP(avp.OriginRealm, avp.Mbit, 0, sm.cfg.OriginRealm)
@@ -36,7 +40,9 @@ func handleDWR(sm *StateMachine) diam.HandlerFunc {
 			stateid := datatype.Unsigned32(sm.cfg.OriginStateID)
 			m.NewAVP(avp.OriginStateID, avp.Mbit, 0, stateid)
 		}
+		consoleLog("sending: DWA")
 		_, err = a.WriteTo(c)
+
 		if err != nil {
 			sm.Error(&diam.ErrorReport{
 				Conn:    c,
@@ -45,4 +51,9 @@ func handleDWR(sm *StateMachine) diam.HandlerFunc {
 			})
 		}
 	}
+}
+
+func consoleLog(format string, v ...interface{}) {
+	header := fmt.Sprintf("♈ %s[aries] ", time.Now().Format(time.RFC3339))
+	fmt.Printf(header+format, v...)
 }

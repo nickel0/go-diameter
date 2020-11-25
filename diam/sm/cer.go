@@ -41,7 +41,10 @@ func handleCER(sm *StateMachine) diam.HandlerFunc {
 			c.Close()
 			return
 		}
+		consoleLog("received message from %s: CER", c.RemoteAddr())
+
 		err = successCEA(sm, c, m, cer)
+		consoleLog("sending: CEA")
 
 		if err != nil {
 			sm.Error(&diam.ErrorReport{
