@@ -64,6 +64,40 @@ type liveSwitchReader struct {
 	pipeCopyF func()
 }
 
+// -----------------------------------------------------------------
+// -----------------------------------------------------------------
+
+type mutexMapConnRepository struct {
+	m map[string]*conn
+}
+
+func newMutexMapConnRepository() *mutexMapConnRepository {
+	return &mutexMapConnRepository{
+		m: make(map[string]*conn),
+	}
+}
+
+func (cr *mutexMapConnRepository) PickOneConnection() *conn {
+	for _, c := range cr.m {
+		return c
+	}
+	return nil
+}
+
+func (cr *mutexMapConnRepository) Put(c *conn) {
+	raddr := c.rwc.RemoteAddr().String()
+	cr.m[raddr] = c
+}
+
+func (cr *mutexMapConnRepository) Delete(raddr string) {
+	delete(cr.m, raddr)
+}
+
+var ConnectionRepository mutexMapConnRepository
+
+// -----------------------------------------------------------------
+// -----------------------------------------------------------------
+
 func (sr *liveSwitchReader) Read(p []byte) (n int, err error) {
 	sr.Lock()
 	// Check if closeNotifier was created prior to this Read call & start it
@@ -185,7 +219,10 @@ func (c *conn) serve() {
 				c.rwc.RemoteAddr().String(), err, buf)
 		}
 		c.rwc.Close()
+
+		// Disconnection procedure
 		consoleLog("Connection is terminalted.\n")
+		ConnectionRepository.Delete(c.rwc.RemoteAddr().String())
 	}()
 	if tlsConn, ok := c.rwc.(*tls.Conn); ok {
 		if err := tlsConn.Handshake(); err != nil {
@@ -610,6 +647,8 @@ func (srv *Server) ListenAndServe() error {
 func (srv *Server) Serve(l net.Listener) error {
 	defer l.Close()
 	var tempDelay time.Duration // how long to sleep on accept failure
+	ConnectionRepository := newMutexMapConnRepository()
+
 	for {
 		rw, e := l.Accept()
 		if e != nil {
@@ -641,7 +680,9 @@ func (srv *Server) Serve(l net.Listener) error {
 			log.Printf("srv.newConn error: %v", err)
 			continue
 		} else {
+			// Establishment procedures
 			consoleLog("Connection is established.\n")
+			ConnectionRepository.Put(c)
 			go c.serve()
 		}
 	}
