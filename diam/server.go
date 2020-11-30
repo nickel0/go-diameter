@@ -210,6 +210,7 @@ func (c *conn) readMessage() (m *Message, err error) {
 
 // Serve a new connection.
 func (c *conn) serve() {
+	ra := c.rwc.RemoteAddr().String()
 	defer func() {
 		if err := recover(); err != nil {
 			buf := make([]byte, 4096)
@@ -218,8 +219,8 @@ func (c *conn) serve() {
 				c.rwc.RemoteAddr().String(), err, buf)
 		}
 		// Disconnection procedure
-		consoleLog("Connection is terminalted. Remote Addr: %s\n", c.rwc.RemoteAddr().String())
-		ConnectionRepository.Delete(c.rwc.RemoteAddr().String())
+		consoleLog("Connection is terminalted. Remote Addr: %s\n", ra)
+		ConnectionRepository.Delete(ra)
 
 		c.rwc.Close()
 
