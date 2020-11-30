@@ -64,40 +64,40 @@ type liveSwitchReader struct {
 	pipeCopyF func()
 }
 
+var ConnRepository map[string]net.Conn
+
 // -----------------------------------------------------------------
 // -----------------------------------------------------------------
+// type ConnRepository struct {
+// 	M map[string]net.Conn
+// }
 
-type mutexMapConnRepository struct {
-	m map[string]net.Conn
-}
+// func NewConnRepository() *ConnRepository {
+// 	return &ConnRepository{
+// 		M: make(map[string]net.Conn),
+// 	}
+// }
 
-func newMutexMapConnRepository() *mutexMapConnRepository {
-	return &mutexMapConnRepository{
-		m: make(map[string]net.Conn),
-	}
-}
+// func (cr *ConnRepository) PickOneConnection() net.Conn {
+// 	for _, c := range cr.M {
+// 		return c
+// 	}
+// 	return nil
+// }
 
-func (cr *mutexMapConnRepository) PickOneConnection() net.Conn {
-	for _, c := range cr.m {
-		return c
-	}
-	return nil
-}
+// func (cr *ConnRepository) Put(raddr string, c net.Conn) {
+// 	cr.M[raddr] = c
+// }
 
-func (cr *mutexMapConnRepository) Put(raddr string, c net.Conn) {
-	cr.m[raddr] = c
-}
+// func (cr *ConnRepository) Delete(raddr string) {
+// 	delete(cr.M, raddr)
+// }
 
-func (cr *mutexMapConnRepository) Delete(raddr string) {
-	delete(cr.m, raddr)
-}
+// var ConnectionRepository ConnRepository
 
-var ConnectionRepository mutexMapConnRepository
-
-func GetConnection() net.Conn {
-	return ConnectionRepository.PickOneConnection()
-}
-
+// func GetConnection() net.Conn {
+// 	return ConnectionRepository.PickOneConnection()
+// }
 // -----------------------------------------------------------------
 // -----------------------------------------------------------------
 
@@ -224,8 +224,7 @@ func (c *conn) serve() {
 		}
 		// Disconnection procedure
 		consoleLog("Connection is terminalted. Remote Addr: %s\n", ra)
-		ConnectionRepository.Delete(ra)
-
+		delete(ConnRepository, ra)
 		c.rwc.Close()
 
 	}()
@@ -652,7 +651,7 @@ func (srv *Server) ListenAndServe() error {
 func (srv *Server) Serve(l net.Listener) error {
 	defer l.Close()
 	var tempDelay time.Duration // how long to sleep on accept failure
-	ConnectionRepository := newMutexMapConnRepository()
+	ConnRepository = make(map[string]net.Conn)
 
 	for {
 		rw, e := l.Accept()
@@ -687,8 +686,7 @@ func (srv *Server) Serve(l net.Listener) error {
 		} else {
 			// Establishment procedures
 			consoleLog("Connection is established. Remote Addr: %s\n", c.rwc.RemoteAddr().String())
-
-			ConnectionRepository.Put(c.rwc.RemoteAddr().String(), c.rwc)
+			ConnRepository[c.rwc.RemoteAddr().String()] = c.rwc
 			go c.serve()
 		}
 	}
