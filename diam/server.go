@@ -217,11 +217,12 @@ func (c *conn) serve() {
 			log.Printf("diam: panic serving %v: %v\n%s",
 				c.rwc.RemoteAddr().String(), err, buf)
 		}
+		// Disconnection procedure
+		consoleLog("Connection is terminalted. Remote Addr: %s\n", c.rwc.RemoteAddr().String())
+		ConnectionRepository.Delete(c.rwc.RemoteAddr().String())
+
 		c.rwc.Close()
 
-		// Disconnection procedure
-		consoleLog("Connection is terminalted.\n")
-		ConnectionRepository.Delete(c.rwc.RemoteAddr().String())
 	}()
 	if tlsConn, ok := c.rwc.(*tls.Conn); ok {
 		if err := tlsConn.Handshake(); err != nil {
@@ -680,7 +681,7 @@ func (srv *Server) Serve(l net.Listener) error {
 			continue
 		} else {
 			// Establishment procedures
-			consoleLog("Connection is established.\n")
+			consoleLog("Connection is established. Remote Addr: %s\n", c.rwc.RemoteAddr().String())
 
 			ConnectionRepository.Put(c.rwc.RemoteAddr().String(), c.rwc)
 			go c.serve()
