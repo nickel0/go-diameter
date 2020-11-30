@@ -94,6 +94,10 @@ func (cr *mutexMapConnRepository) Delete(raddr string) {
 
 var ConnectionRepository mutexMapConnRepository
 
+func GetConnection() net.Conn {
+	return ConnectionRepository.PickOneConnection()
+}
+
 // -----------------------------------------------------------------
 // -----------------------------------------------------------------
 
