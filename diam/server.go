@@ -185,6 +185,7 @@ func (c *conn) serve() {
 				c.rwc.RemoteAddr().String(), err, buf)
 		}
 		c.rwc.Close()
+		consoleLog("Connection is terminalted.\n")
 	}()
 	if tlsConn, ok := c.rwc.(*tls.Conn); ok {
 		if err := tlsConn.Handshake(); err != nil {
@@ -640,6 +641,7 @@ func (srv *Server) Serve(l net.Listener) error {
 			log.Printf("srv.newConn error: %v", err)
 			continue
 		} else {
+			consoleLog("Connection is established.\n")
 			go c.serve()
 		}
 	}
@@ -728,4 +730,9 @@ func ListenAndServeNetworkTLS(network, addr string, certFile string, keyFile str
 // One can use generate_cert.go in crypto/tls to generate cert.pem and key.pem.
 func ListenAndServeTLS(addr string, certFile string, keyFile string, handler Handler, dp *dict.Parser) error {
 	return ListenAndServeNetworkTLS("tcp", addr, certFile, keyFile, handler, dp)
+}
+
+func consoleLog(format string, v ...interface{}) {
+	header := fmt.Sprintf("♈ %s[aries] ", time.Now().Format(time.RFC3339))
+	fmt.Printf(header+format, v...)
 }
