@@ -68,24 +68,23 @@ type liveSwitchReader struct {
 // -----------------------------------------------------------------
 
 type mutexMapConnRepository struct {
-	m map[string]*conn
+	m map[string]net.Conn
 }
 
 func newMutexMapConnRepository() *mutexMapConnRepository {
 	return &mutexMapConnRepository{
-		m: make(map[string]*conn),
+		m: make(map[string]net.Conn),
 	}
 }
 
-func (cr *mutexMapConnRepository) PickOneConnection() *conn {
+func (cr *mutexMapConnRepository) PickOneConnection() net.Conn {
 	for _, c := range cr.m {
 		return c
 	}
 	return nil
 }
 
-func (cr *mutexMapConnRepository) Put(c *conn) {
-	raddr := c.rwc.RemoteAddr().String()
+func (cr *mutexMapConnRepository) Put(raddr string, c net.Conn) {
 	cr.m[raddr] = c
 }
 
@@ -682,7 +681,8 @@ func (srv *Server) Serve(l net.Listener) error {
 		} else {
 			// Establishment procedures
 			consoleLog("Connection is established.\n")
-			ConnectionRepository.Put(c)
+
+			ConnectionRepository.Put(c.rwc.RemoteAddr().String(), c.rwc)
 			go c.serve()
 		}
 	}
