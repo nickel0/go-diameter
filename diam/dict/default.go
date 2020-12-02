@@ -18,13 +18,13 @@ var Default *Parser
 func init() {
 	var dictionaries = []struct{ name, xml string }{
 		{"Base", baseXML},
-		{"Credit Control", creditcontrolXML},
-		{"Gx Charging Control", gxcreditcontrolXML},
+		// {"Credit Control", creditcontrolXML},
+		// {"Gx Charging Control", gxcreditcontrolXML},
 		{"Network Access Server", networkaccessserverXML},
 		{"TGPP", tgpprorfXML},
 		{"TGPP_S6a", tgpps6aXML},
 		{"TGPP_S13", tgpps13XML},
-		{"TGPP_Swx", tgppswxXML},
+		// {"TGPP_Swx", tgppswxXML},
 	}
 	var err error
 	Default, err = NewParser()

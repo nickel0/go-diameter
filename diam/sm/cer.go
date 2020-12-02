@@ -147,7 +147,6 @@ func successCEA(sm *StateMachine, c diam.Conn, m *diam.Message, cer *smparser.CE
 			typ = avp.AcctApplicationID
 		}
 		if app.Vendor != 0 {
-			a.NewAVP(avp.SupportedVendorID, avp.Mbit, 0, datatype.Unsigned32(app.Vendor))
 			a.NewAVP(avp.VendorSpecificApplicationID, avp.Mbit, 0, &diam.GroupedAVP{
 				AVP: []*diam.AVP{
 					diam.NewAVP(avp.VendorID, avp.Mbit, 0, datatype.Unsigned32(app.Vendor)),
@@ -158,6 +157,7 @@ func successCEA(sm *StateMachine, c diam.Conn, m *diam.Message, cer *smparser.CE
 			a.NewAVP(typ, avp.Mbit, 0, datatype.Unsigned32(app.ID))
 		}
 	}
+	a.NewAVP(avp.SupportedVendorID, avp.Mbit, 0, datatype.Unsigned32(10415)) // 3GPP
 	if sm.cfg.FirmwareRevision != 0 {
 		a.NewAVP(avp.FirmwareRevision, 0, 0, sm.cfg.FirmwareRevision)
 	}
