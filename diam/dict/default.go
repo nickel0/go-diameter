@@ -18,13 +18,13 @@ var Default *Parser
 func init() {
 	var dictionaries = []struct{ name, xml string }{
 		{"Base", baseXML},
-		// {"Credit Control", creditcontrolXML},
-		// {"Gx Charging Control", gxcreditcontrolXML},
-		// {"Network Access Server", networkaccessserverXML},
-		// {"TGPP", tgpprorfXML},
+		{"Credit Control", creditcontrolXML},
+		{"Gx Charging Control", gxcreditcontrolXML},
+		{"Network Access Server", networkaccessserverXML},
+		{"TGPP", tgpprorfXML},
 		{"TGPP_S6a", tgpps6aXML},
 		{"TGPP_S13", tgpps13XML},
-		// {"TGPP_Swx", tgppswxXML},
+		{"TGPP_Swx", tgppswxXML},
 	}
 	var err error
 	Default, err = NewParser()
@@ -5062,6 +5062,8 @@ var tgpps6aXML = `<?xml version="1.0" encoding="UTF-8"?>
                 <rule avp="AVP" required="false"/>
                 <rule avp="Proxy-Info" required="false"/>
                 <rule avp="Route-Record" required="false"/>
+                <rule avp="EPS-Location-Information" required="false" max="1" />
+                <rule avp="EPS-User-State" required="false" max="1" />
             </request>
             <answer>
                 <rule avp="Session-Id" required="true" max="1"/>
@@ -6030,10 +6032,6 @@ var tgpps6aXML = `<?xml version="1.0" encoding="UTF-8"?>
                 <rule avp="MIP6-Home-Link-Prefix" required="false" max="1"/>
                 <rule avp="AVP" required="false"/>
             </data>
-        </avp>
-
-        <avp name="Service-Selection" code="493" must="M" may="P" must-not="V" may-encrypt="Y" vendor-id="10415">
-            <data type="UTF8String"/>
         </avp>
 
         <avp name="Visited-Network-Identifier" code="600" must="M,V" may-encrypt="N" vendor-id="10415">

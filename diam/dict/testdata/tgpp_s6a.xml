@@ -37,6 +37,8 @@
                 <rule avp="AVP" required="false"/>
                 <rule avp="Proxy-Info" required="false"/>
                 <rule avp="Route-Record" required="false"/>
+                <rule avp="EPS-Location-Information" required="false" max="1" />
+                <rule avp="EPS-User-State" required="false" max="1" />
             </request>
             <answer>
                 <rule avp="Session-Id" required="true" max="1"/>
@@ -1005,10 +1007,6 @@
                 <rule avp="MIP6-Home-Link-Prefix" required="false" max="1"/>
                 <rule avp="AVP" required="false"/>
             </data>
-        </avp>
-
-        <avp name="Service-Selection" code="493" must="M" may="P" must-not="V" may-encrypt="Y" vendor-id="10415">
-            <data type="UTF8String"/>
         </avp>
 
         <avp name="Visited-Network-Identifier" code="600" must="M,V" may-encrypt="N" vendor-id="10415">

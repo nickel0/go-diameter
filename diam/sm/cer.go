@@ -146,17 +146,29 @@ func successCEA(sm *StateMachine, c diam.Conn, m *diam.Message, cer *smparser.CE
 		case "acct":
 			typ = avp.AcctApplicationID
 		}
-		if app.Vendor != 0 {
+		if app.Vendor != 0 && (app.ID == diam.TGPP_S6A_APP_ID || app.ID == diam.TGPP_S13_APP_ID) {
 			a.NewAVP(avp.VendorSpecificApplicationID, avp.Mbit, 0, &diam.GroupedAVP{
 				AVP: []*diam.AVP{
 					diam.NewAVP(avp.VendorID, avp.Mbit, 0, datatype.Unsigned32(app.Vendor)),
 					diam.NewAVP(typ, avp.Mbit, 0, datatype.Unsigned32(app.ID)),
 				},
 			})
-		} else {
+		} else if app.ID == 3 {
 			a.NewAVP(typ, avp.Mbit, 0, datatype.Unsigned32(app.ID))
 		}
+
+		// if app.Vendor != 0 {
+		// 	a.NewAVP(avp.VendorSpecificApplicationID, avp.Mbit, 0, &diam.GroupedAVP{
+		// 		AVP: []*diam.AVP{
+		// 			diam.NewAVP(avp.VendorID, avp.Mbit, 0, datatype.Unsigned32(app.Vendor)),
+		// 			diam.NewAVP(typ, avp.Mbit, 0, datatype.Unsigned32(app.ID)),
+		// 		},
+		// 	})
+		// } else {
+		// 	a.NewAVP(typ, avp.Mbit, 0, datatype.Unsigned32(app.ID))
+		// }
 	}
+
 	a.NewAVP(avp.SupportedVendorID, avp.Mbit, 0, datatype.Unsigned32(10415)) // 3GPP
 	if sm.cfg.FirmwareRevision != 0 {
 		a.NewAVP(avp.FirmwareRevision, 0, 0, sm.cfg.FirmwareRevision)
